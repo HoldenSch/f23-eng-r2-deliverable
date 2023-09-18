@@ -87,10 +87,10 @@ git clone git@github.com:hcs-t4sg/f23-eng-r2-deliverable.git
 
   ```bash
   added 414 packages, and audited 415 packages in 13s
-  
+
   149 packages are looking for funding
   run `npm fund` for details
-  
+
   found 0 vulnerabilities
   ```
 
@@ -135,7 +135,7 @@ git clone git@github.com:hcs-t4sg/f23-eng-r2-deliverable.git
    ```bash
    # Start the webapp in development mode (usually what you do in development). Exit with Ctrl + C
    npm run dev
-   
+
    # You'll get several "compiling" messages after running this command. That's expected!
    ```
 

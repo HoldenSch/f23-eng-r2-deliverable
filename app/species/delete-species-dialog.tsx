@@ -1,4 +1,4 @@
-"use client";
+"use client"; // Make this a client component
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,20 +11,24 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
 import type { Database } from "@/lib/schema";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-
-type Species = Database["public"]["Tables"]["species"]["Row"];
+type Species = Database["public"]["Tables"]["species"]["Row"]; //Define type for Species
 
 export default function DeleteSpecies(species: Species) {
-  const router = useRouter();
+  const router = useRouter(); // Initializing the router from Next.js.
+
+  // Function to handle the deletion of a species.
   const submitDelete = async () => {
-    // The `input` prop contains data that has already been processed by zod. We can now use it in a supabase query
+    // Initialize a Supabase client using the helper function.
     const supabase = createClientComponentClient<Database>();
+
+    // Attempt to delete the species with the given ID.
     const { error } = await supabase.from("species").delete().eq("id", species.id);
 
+    // Check for errors during deletion and display a toast message if there's an error.
     if (error) {
       return toast({
         title: "Something went wrong.",
@@ -32,41 +36,41 @@ export default function DeleteSpecies(species: Species) {
         variant: "destructive",
       });
     }
-    // Reset form values to the data values that have been processed by zod.
-    // This way the user sees any changes that have occurred during transformation
-    setIsOpen(false);
 
-    // Refresh all server components in the current route. This helps display the newly created species because species are fetched in a server component, species/page.tsx.
-    // Refreshing that server component will display the new species from Supabase
+    setIsOpen(false); // Close the dialog after successful deletion.
+
+    // Refresh all server components in the current route to display the updated data.
+    // This is done by triggering a route refresh using the router.
     router.refresh();
-
   };
 
-  // You can then call this function elsewhere in your code when needed, passing the species ID as an argument.
-  // For example:
-  // deleteSpecies(species.id);
-
+  // State to manage the open/close state of the dialog.
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
     <div>
       <div>
         {
+          // Conditionally render the dialog based on the isOpen state.
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
+              {/* Button that triggers the opening of the dialog */}
               <Button variant="destructive" className="mt-0 w-full">
                 Delete
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
+                {/* Title of the dialog */}
                 <DialogTitle>Are you sure you want to delete this species?</DialogTitle>
               </DialogHeader>
               <DialogDescription>
+                {/* Description of the dialog */}
                 This will delete this species permanently. You will not be able to undo this action.
               </DialogDescription>
               <DialogFooter>
                 <div className="flex">
+                  {/* Button to cancel the deletion */}
                   <Button
                     type="button"
                     className="ml-1 mr-1 flex-auto"
@@ -75,6 +79,7 @@ export default function DeleteSpecies(species: Species) {
                   >
                     Cancel
                   </Button>
+                  {/* Button to confirm and trigger the deletion */}
                   <Button type="submit" variant="destructive" className="ml-1 mr-1 flex-auto" onClick={submitDelete}>
                     Delete
                   </Button>

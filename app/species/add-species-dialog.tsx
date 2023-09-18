@@ -1,5 +1,5 @@
-"use client";
-
+"use client"; //Make this a client component
+// Import necessary components and libraries.
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,16 +23,12 @@ import { useState, type BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-// We use zod (z) to define a schema for the "Add species" form.
-// zod handles validation of the input values with methods like .string(), .nullable(). It also processes the form inputs with .transform() before the inputs are sent to the database.
-
+// Define a schema for the "Add species" form using Zod.
 const kingdoms = z.enum(["Animalia", "Plantae", "Fungi", "Protista", "Archaea", "Bacteria"]);
-
 const speciesSchema = z.object({
   common_name: z
     .string()
     .nullable()
-    // Transform empty string or only whitespace input to null before form submission
     .transform((val) => (val?.trim() === "" ? null : val?.trim())),
   description: z
     .string()
@@ -51,9 +47,9 @@ const speciesSchema = z.object({
     .nullable()
     .transform((val) => val?.trim()),
 });
-
 type FormData = z.infer<typeof speciesSchema>;
 
+// Default form values.
 const defaultValues: Partial<FormData> = {
   kingdom: "Animalia",
 };
@@ -62,14 +58,16 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
 
+  // Create a form using React Hook Form and Zod for validation.
   const form = useForm<FormData>({
     resolver: zodResolver(speciesSchema),
     defaultValues,
     mode: "onChange",
   });
 
+  // Handle form submission.
   const onSubmit = async (input: FormData) => {
-    // The `input` prop contains data that has already been processed by zod. We can now use it in a supabase query
+    // Initialize a Supabase client.
     const supabase = createClientComponentClient<Database>();
     const { error } = await supabase.from("species").insert([
       {
@@ -84,26 +82,27 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
     ]);
 
     if (error) {
+      // Display a toast message if there's an error.
       return toast({
         title: "Something went wrong.",
         description: error.message,
         variant: "destructive",
       });
     }
-    // Reset form values to the data values that have been processed by zod.
-    // This way the user sees any changes that have occurred during transformation
+
+    // Reset form values to the data values that have been processed by Zod.
     form.reset(input);
 
-    setOpen(false);
+    setOpen(false); // Close the dialog.
 
-    // Refresh all server components in the current route. This helps display the newly created species because species are fetched in a server component, species/page.tsx.
-    // Refreshing that server component will display the new species from Supabase
+    // Refresh all server components in the current route to display the newly created species.
     router.refresh();
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
+        {/* Button to open the dialog */}
         <Button variant="secondary" onClick={() => setOpen(true)}>
           <Icons.add className="mr-3 h-5 w-5" />
           Add Species
@@ -112,14 +111,17 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
       <DialogContent className="max-h-screen overflow-y-auto sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Add Species</DialogTitle>
-
           <DialogDescription>
+            {/* Description of the dialog */}
             Add a new species here. Click &quot;Add Species&quot; below when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
+        {/* Render the form */}
         <Form {...form}>
           <form onSubmit={(e: BaseSyntheticEvent) => void form.handleSubmit(onSubmit)(e)}>
             <div className="grid w-full items-center gap-4">
+              {/* Form fields */}
+              {/* Scientific Name */}
               <FormField
                 control={form.control}
                 name="scientific_name"
@@ -133,11 +135,11 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
                   </FormItem>
                 )}
               />
+              {/* Common Name */}
               <FormField
                 control={form.control}
                 name="common_name"
                 render={({ field }) => {
-                  // We must extract value from field and convert a potential defaultValue of `null` to "" because inputs can't handle null values: https://github.com/orgs/react-hook-form/discussions/4091
                   const { value, ...rest } = field;
                   return (
                     <FormItem>
@@ -150,13 +152,13 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
                   );
                 }}
               />
+              {/* Kingdom */}
               <FormField
                 control={form.control}
                 name="kingdom"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Kingdom</FormLabel>
-                    {/* Using shadcn/ui form with enum: https://github.com/shadcn-ui/ui/issues/772 */}
                     <Select onValueChange={(value) => field.onChange(kingdoms.parse(value))} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -177,6 +179,7 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
                   </FormItem>
                 )}
               />
+              {/* Total Population */}
               <FormField
                 control={form.control}
                 name="total_population"
@@ -184,7 +187,6 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
                   <FormItem>
                     <FormLabel>Total population</FormLabel>
                     <FormControl>
-                      {/* Using shadcn/ui form with number: https://github.com/shadcn-ui/ui/issues/421 */}
                       <Input
                         type="number"
                         placeholder="300000"
@@ -196,6 +198,7 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
                   </FormItem>
                 )}
               />
+              {/* Image URL */}
               <FormField
                 control={form.control}
                 name="image"
@@ -212,11 +215,11 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
                   </FormItem>
                 )}
               />
+              {/* Description */}
               <FormField
                 control={form.control}
                 name="description"
                 render={({ field }) => {
-                  // We must extract value from field and convert a potential defaultValue of `null` to "" because textareas can't handle null values: https://github.com/orgs/react-hook-form/discussions/4091
                   const { value, ...rest } = field;
                   return (
                     <FormItem>
@@ -233,10 +236,13 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
                   );
                 }}
               />
+              {/* Buttons */}
               <div className="flex">
+                {/* Button to submit the form */}
                 <Button type="submit" className="ml-1 mr-1 flex-auto">
                   Add Species
                 </Button>
+                {/* Button to cancel and close the dialog */}
                 <Button
                   type="button"
                   className="ml-1 mr-1 flex-auto"
