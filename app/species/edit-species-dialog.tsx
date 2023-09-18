@@ -153,7 +153,7 @@ export default function EditSpeciesDialog({ species, userID }: { species: Specie
                     <FormItem>
                       <FormLabel>Common Name</FormLabel>
                       <FormControl>
-                        <Input value={value ?? ""} placeholder={species.common_name} {...rest} />
+                        <Input value={value ?? ""} placeholder={species.common_name!} {...rest} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -203,7 +203,7 @@ export default function EditSpeciesDialog({ species, userID }: { species: Specie
                       {/* Using Shadcn/UI form with number */}
                       <Input
                         type="number"
-                        placeholder={species.total_population}
+                        placeholder={species.total_population?.toString()}
                         {...field}
                         onChange={(event) => field.onChange(+event.target.value)}
                       />
@@ -220,7 +220,7 @@ export default function EditSpeciesDialog({ species, userID }: { species: Specie
                   <FormItem>
                     <FormLabel>Image URL</FormLabel>
                     <FormControl>
-                      <Input placeholder={species.image} {...field} />
+                      <Input placeholder={species.image!} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -237,7 +237,7 @@ export default function EditSpeciesDialog({ species, userID }: { species: Specie
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea value={value ?? ""} placeholder={species.description} {...rest} />
+                        <Textarea value={value ?? ""} placeholder={species.description!} {...rest} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

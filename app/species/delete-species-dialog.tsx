@@ -80,7 +80,12 @@ export default function DeleteSpecies(species: Species) {
                     Cancel
                   </Button>
                   {/* Button to confirm and trigger the deletion */}
-                  <Button type="submit" variant="destructive" className="ml-1 mr-1 flex-auto" onClick={submitDelete}>
+                  <Button
+                    type="submit"
+                    variant="destructive"
+                    className="ml-1 mr-1 flex-auto"
+                    onClick={() => void submitDelete()}
+                  >
                     Delete
                   </Button>
                 </div>

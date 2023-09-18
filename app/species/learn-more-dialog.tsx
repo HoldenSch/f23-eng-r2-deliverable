@@ -49,7 +49,7 @@ export default function SpeciesInfo({ species, userID }: { species: Species; use
               <div className="relative h-80 w-full">
                 <Image
                   className="rounded-sm"
-                  src={species.image}
+                  src={species.image!}
                   alt={species.scientific_name}
                   fill
                   style={{ objectFit: "cover" }}
